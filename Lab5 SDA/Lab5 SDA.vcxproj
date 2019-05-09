@@ -115,9 +115,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BinaryHeap.h" />
     <ClInclude Include="PriorityQueue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinaryHeap.cpp" />
     <ClCompile Include="PriorityQueue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
