@@ -116,11 +116,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinaryHeap.h" />
-    <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="ThirdPriorityQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinaryHeap.cpp" />
-    <ClCompile Include="PriorityQueue.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ThirdPriorityQueue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

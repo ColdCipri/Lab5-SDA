@@ -1,89 +1,130 @@
 #include "BinaryHeap.h"
 #include <iostream>
+using namespace std;
 
-
-BinaryHeap::BinaryHeap(int cap)
+BinaryHeap::BinaryHeap(int cap, Relation r)
 {
-	heap_size = 0;
-	capacity = cap;
-	harr = new int[cap];
+	this->heap_size = 0;
+	this->capacity = cap;
+	this->el = new Element[capacity];
+	this->r = r;
 }
-
-int BinaryHeap::extractMin()
+//O(log n) 
+Element BinaryHeap::extractMin()
 {
 	if (heap_size <= 0)
-		return INT_MAX;
-	if (heap_size == 1)
-	{
-		heap_size--;
-		return harr[0];
-	}
+		throw std::exception();
 
-	// Store the minimum value, and remove it from heap 
-	int root = harr[0];
-	harr[0] = harr[heap_size - 1];
+	Element root = el[0];
+	el[0] = el[heap_size - 1];
 	heap_size--;
-	BinaryHeapify(0);
-
+	if (this->r(1, 2) == true) 
+		BinaryHeapify1(0);
+	else 
+		BinaryHeapify2(0);
 	return root;
 }
 
-void BinaryHeap::decreaseKey(int i, int new_val)
+//W.C: O(log n) || AVG: O(log n) || BC: O(1)
+void BinaryHeap::insertKey(Element k)
 {
-	harr[i] = new_val;
-	while (i != 0 && harr[parent(i)] > harr[i])
-	{
-		swap(&harr[i], &harr[parent(i)]);
-		i = parent(i);
-	}
-}
-
-void BinaryHeap::deleteKey(int i)
-{
-	decreaseKey(i, INT_MIN);
-	extractMin();
-}
-
-void BinaryHeap::insertKey(int k)
-{
+	//resize
 	if (heap_size == capacity)
 	{
-		std::cout << "\nOverflow: Could not insertKey\n";
-		return;
+		this->capacity *= 2;
+		Element *newharr = new Element[this->capacity];
+		for (int i = 0; i < this->capacity / 2; i++)
+			newharr[i] = this->el[i];
+		delete this->el;
+		this->el = newharr;
 	}
-
 	// First insert the new key at the end 
 	heap_size++;
 	int i = heap_size - 1;
-	harr[i] = k;
+	el[i] = k;
+	//min heap
+	if (this->r(1,2)==true) {
+		while (i != 0 && el[parent(i)].second > el[i].second)
+		{
+			Element temp = el[i];
+			el[i] = el[parent(i)];
+			el[parent(i)] = temp;
+			i = parent(i);
+		}
+	}
+	//max heap
+	else {
+		while (i != 0 && el[parent(i)].second < el[i].second)
+		{
 
-	// Fix the min heap property if it is violated 
-	while (i != 0 && harr[parent(i)] > harr[i])
-	{
-		swap(&harr[i], &harr[parent(i)]);
-		i = parent(i);
+			Element temp = el[i];
+			el[i] = el[parent(i)];
+			el[parent(i)] = temp;
+			i = parent(i);
+		}
 	}
 }
 
-void BinaryHeap::BinaryHeapify(int i)
+//O(log n) (does it 3 times)
+Element BinaryHeap::returnThird() {
+	Element temp[2];
+	for (int i = 0; i < 2; i++)
+		temp[i] = this->extractMin();
+	Element e = extractMin();
+	this->insertKey(temp[0]);
+	this->insertKey(temp[1]);
+	this->insertKey(e);
+	return e;
+}
+
+Element BinaryHeap::extractThird() {
+	Element i = this->extractMin();
+	Element j = this->extractMin();
+	Element e = this->extractMin();
+	this->insertKey(i);
+	this->insertKey(j);
+
+	return e;
+}
+//O(log n) (Bubble-down)
+void BinaryHeap::BinaryHeapify1(int i)
 {
 	int l = left(i);
 	int r = right(i);
 	int smallest = i;
-	if (l < heap_size && harr[l] < harr[i])
+	if (l < heap_size && el[l].second < el[i].second)
 		smallest = l;
-	if (r < heap_size && harr[r] < harr[smallest])
+	if (r < heap_size && el[r].second < el[smallest].second)
 		smallest = r;
 	if (smallest != i)
 	{
-		swap(&harr[i], &harr[smallest]);
-		BinaryHeapify(smallest);
+		Element temp = el[i];
+		el[i] = el[smallest];
+		el[smallest] = temp;
+		BinaryHeapify1(smallest);
+	}
+}
+//O(log n)
+void BinaryHeap::BinaryHeapify2(int i)
+{
+	int l = left(i);
+	int r = right(i);
+	int smallest = i;
+	if (l < heap_size && el[l].second > el[i].second)
+		smallest = l;
+	if (r < heap_size && el[r].second > el[smallest].second)
+		smallest = r;
+	if (smallest != i)
+	{
+		Element temp = el[i];
+		el[i] = el[smallest];
+		el[smallest] = temp;
+		BinaryHeapify2(smallest);
 	}
 }
 
-void swap(int *x, int *y)
-{
-	int temp = *x;
-	*x = *y;
-	*y = temp;
+void BinaryHeap::printare() {
+	for (int i = 0; i < this->heap_size; i++) {
+		cout << this->el[i].second << " ";
+	}
 }
